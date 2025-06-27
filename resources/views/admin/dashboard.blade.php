@@ -15,7 +15,11 @@
         </div>
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h3 class="text-xl font-semibold mb-4">Selamat Datang, {{ Auth::user()->name }}</h3>
-            <p>Ini adalah dashboard admin untuk mengelola data dosen.</p>
+            <p>Ini adalah dashboard Ats dashboard admin untuk mengelola data dosen.</p>
+            <div class="mt-4">
+                <a href="{{ route('admin.dosen.index') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Lihat Data Dosen</a>
+                <a href="{{ route('admin.dosen.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Tambah Dosen</a>
+            </div>
         </div>
     </div>
 </body>
