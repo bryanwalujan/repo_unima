@@ -7,18 +7,10 @@ use App\Models\Pengabdian;
 use App\Models\Haki;
 use App\Models\Paten;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\DosenImport;
+use Illuminate\Support\Facades\Storage;
 
 class DosenController extends Controller
 {
-
-    public function index()
-    {
-        $dosens = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->get();
-        return view('admin.dosen.index', compact('dosens'));
-    }
-
     public function create()
     {
         return view('admin.dosen.create');
@@ -27,46 +19,196 @@ class DosenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nidn' => 'required|unique:dosens,nidn',
-            'nip' => 'nullable',
-            'nuptk' => 'nullable',
-            'nama' => 'required',
+            'nama' => 'required|string|max:255',
+            'nidn' => 'required|string|max:20|unique:dosens,nidn',
+            'nip' => 'nullable|string|max:20',
+            'nuptk' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'penelitians.*.skema' => 'nullable|string',
+            'penelitians.*.posisi' => 'nullable|string',
+            'penelitians.*.judul_penelitian' => 'nullable|string',
+            'penelitians.*.sumber_dana' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.tahun' => 'nullable|integer',
+            'penelitians.*.link_luaran' => 'nullable|url',
+            'pengabdians.*.skema' => 'nullable|string',
+            'pengabdians.*.posisi' => 'nullable|string',
+            'pengabdians.*.judul_pengabdian' => 'nullable|string',
+            'pengabdians.*.sumber_dana' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.tahun' => 'nullable|integer',
+            'pengabdians.*.link_luaran' => 'nullable|url',
+            'hakis.*.judul_haki' => 'nullable|string',
+            'hakis.*.expired' => 'nullable|date',
+            'hakis.*.link' => 'nullable|url',
+            'patens.*.judul_paten' => 'nullable|string',
+            'patens.*.jenis_paten' => 'nullable|string',
+            'patens.*.expired' => 'nullable|date',
+            'patens.*.link' => 'nullable|url',
         ]);
 
-        $dosen = Dosen::create($request->only(['nidn', 'nip', 'nuptk', 'nama']));
+        $data = $request->only(['nama', 'nidn', 'nip', 'nuptk']);
 
-        // Simpan data portofolio jika ada
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('dosen', 'public');
+            $data['foto'] = $path;
+        }
+
+        $dosen = Dosen::create($data);
+
+        // Simpan penelitian
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
-                Penelitian::create(array_merge($penelitian, ['dosen_id' => $dosen->id]));
+                if ($penelitian['judul_penelitian']) {
+                    $dosen->penelitians()->create($penelitian);
+                }
             }
         }
+
+        // Simpan pengabdian
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
-                Pengabdian::create(array_merge($pengabdian, ['dosen_id' => $dosen->id]));
+                if ($pengabdian['judul_pengabdian']) {
+                    $dosen->pengabdians()->create($pengabdian);
+                }
             }
         }
+
+        // Simpan HAKI
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
-                Haki::create(array_merge($haki, ['dosen_id' => $dosen->id]));
+                if ($haki['judul_haki']) {
+                    $dosen->hakis()->create($haki);
+                }
             }
         }
+
+        // Simpan paten
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
-                Paten::create(array_merge($paten, ['dosen_id' => $dosen->id]));
+                if ($paten['judul_paten']) {
+                    $dosen->patens()->create($paten);
+                }
             }
         }
 
-        return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil ditambahkan.');
+        return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil ditambahkan.');
     }
 
-    public function import(Request $request)
+    public function index()
     {
+        $dosens = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->get();
+        return view('admin.dosen.index', compact('dosens'));
+    }
+
+    public function edit($id)
+    {
+        $dosen = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->findOrFail($id);
+        return view('admin.dosen.edit', compact('dosen'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $dosen = Dosen::findOrFail($id);
+
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
+            'nama' => 'required|string|max:255',
+            'nidn' => 'required|string|max:20|unique:dosens,nidn,' . $dosen->id,
+            'nip' => 'nullable|string|max:20',
+            'nuptk' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'penelitians.*.skema' => 'nullable|string',
+            'penelitians.*.posisi' => 'nullable|string',
+            'penelitians.*.judul_penelitian' => 'nullable|string',
+            'penelitians.*.sumber_dana' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.tahun' => 'nullable|integer',
+            'penelitians.*.link_luaran' => 'nullable|url',
+            'pengabdians.*.skema' => 'nullable|string',
+            'pengabdians.*.posisi' => 'nullable|string',
+            'pengabdians.*.judul_pengabdian' => 'nullable|string',
+            'pengabdians.*.sumber_dana' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.tahun' => 'nullable|integer',
+            'pengabdians.*.link_luaran' => 'nullable|url',
+            'hakis.*.judul_haki' => 'nullable|string',
+            'hakis.*.expired' => 'nullable|date',
+            'hakis.*.link' => 'nullable|url',
+            'patens.*.judul_paten' => 'nullable|string',
+            'patens.*.jenis_paten' => 'nullable|string',
+            'patens.*.expired' => 'nullable|date',
+            'patens.*.link' => 'nullable|url',
         ]);
 
-        Excel::import(new DosenImport, $request->file('file'));
-        return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimpor.');
+        $data = $request->only(['nama', 'nidn', 'nip', 'nuptk']);
+
+        if ($request->hasFile('foto')) {
+            if ($dosen->foto) {
+                Storage::disk('public')->delete($dosen->foto);
+            }
+            $path = $request->file('foto')->store('dosen', 'public');
+            $data['foto'] = $path;
+        }
+
+        $dosen->update($data);
+
+        // Hapus dan simpan ulang penelitian
+        $dosen->penelitians()->delete();
+        if ($request->has('penelitians')) {
+            foreach ($request->penelitians as $penelitian) {
+                if ($penelitian['judul_penelitian']) {
+                    $dosen->penelitians()->create($penelitian);
+                }
+            }
+        }
+
+        // Hapus dan simpan ulang pengabdian
+        $dosen->pengabdians()->delete();
+        if ($request->has('pengabdians')) {
+            foreach ($request->pengabdians as $pengabdian) {
+                if ($pengabdian['judul_pengabdian']) {
+                    $dosen->pengabdians()->create($pengabdian);
+                }
+            }
+        }
+
+        // Hapus dan simpan ulang HAKI
+        $dosen->hakis()->delete();
+        if ($request->has('hakis')) {
+            foreach ($request->hakis as $haki) {
+                if ($haki['judul_haki']) {
+                    $dosen->hakis()->create($haki);
+                }
+            }
+        }
+
+        // Hapus dan simpan ulang paten
+        $dosen->patens()->delete();
+        if ($request->has('patens')) {
+            foreach ($request->patens as $paten) {
+                if ($paten['judul_paten']) {
+                    $dosen->patens()->create($paten);
+                }
+            }
+        }
+
+        return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $dosen = Dosen::findOrFail($id);
+
+        if ($dosen->foto) {
+            Storage::disk('public')->delete($dosen->foto);
+        }
+
+        $dosen->penelitians()->delete();
+        $dosen->pengabdians()->delete();
+        $dosen->hakis()->delete();
+        $dosen->patens()->delete();
+        $dosen->delete();
+
+        return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
     }
 }

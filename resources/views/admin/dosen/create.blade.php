@@ -15,9 +15,13 @@
                 @endforeach
             </div>
         @endif
-        <form method="POST" action="{{ route('admin.dosen.store') }}">
+        <form method="POST" action="{{ route('admin.dosen.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <div class="mb-4">
+                    <label class="block text-gray-700">Nama</label>
+                    <input type="text" name="nama" class="w-full p-2 border rounded" required>
+                </div>
                 <h3 class="text-xl font-semibold mb-4">Data Diri</h3>
                 <div class="mb-4">
                     <label class="block text-gray-700">NIDN</label>
@@ -32,8 +36,11 @@
                     <input type="text" name="nuptk" class="w-full p-2 border rounded">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700">Nama</label>
-                    <input type="text" name="nama" class="w-full p-2 border rounded" required>
+                    <label class="block text-sm font-medium text-gray-700">Foto</label>
+                    <input type="file" name="foto" accept="image/jpeg,image/png,image/jpg" class="mt-1 p-2 w-full border rounded">
+                    @error('foto')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -166,12 +173,13 @@
             </div>
 
             <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Simpan</button>
+            <a href="{{ route('admin.dosen.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2">Batal</a>
         </form>
     </div>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             let penelitianCount = 1;
-            $('#add-penelitian').click(function() {
+            $('#add-penelitian').click(function () {
                 $('#penelitian-fields').append(`
                     <div class="penelitian-group mb-4">
                         <div class="grid grid-cols-2 gap-4">
@@ -210,7 +218,7 @@
             });
 
             let pengabdianCount = 1;
-            $('#add-pengabdian').click(function() {
+            $('#add-pengabdian').click(function () {
                 $('#pengabdian-fields').append(`
                     <div class="pengabdian-group mb-4">
                         <div class="grid grid-cols-2 gap-4">
@@ -249,7 +257,7 @@
             });
 
             let hakiCount = 1;
-            $('#add-haki').click(function() {
+            $('#add-haki').click(function () {
                 $('#haki-fields').append(`
                     <div class="haki-group mb-4">
                         <div class="grid grid-cols-2 gap-4">
@@ -272,7 +280,7 @@
             });
 
             let patenCount = 1;
-            $('#add-paten').click(function() {
+            $('#add-paten').click(function () {
                 $('#paten-fields').append(`
                     <div class="paten-group mb-4">
                         <div class="grid grid-cols-2 gap-4">

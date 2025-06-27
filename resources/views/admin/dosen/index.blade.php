@@ -44,6 +44,7 @@
                         <thead>
                             <tr class="bg-gray-200">
                                 <th class="border px-4 py-2">No</th>
+                                <th class="border px-4 py-2">Foto</th>
                                 <th class="border px-4 py-2">NIDN</th>
                                 <th class="border px-4 py-2">Nama</th>
                                 <th class="border px-4 py-2">Skema</th>
@@ -53,6 +54,7 @@
                                 <th class="border px-4 py-2">Status</th>
                                 <th class="border px-4 py-2">Tahun</th>
                                 <th class="border px-4 py-2">Link Luaran</th>
+                                <th class="border px-4 py-2">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,6 +63,13 @@
                                 @foreach ($dosen->penelitians as $penelitian)
                                     <tr>
                                         <td class="border px-4 py-2">{{ $no++ }}</td>
+                                        <td class="border px-4 py-2">
+                                            @if ($dosen->foto)
+                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
+                                            @else
+                                                <span>Tidak ada foto</span>
+                                            @endif
+                                        </td>
                                         <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
                                         <td class="border px-4 py-2">{{ $dosen->nama }}</td>
                                         <td class="border px-4 py-2">{{ $penelitian->skema }}</td>
@@ -76,6 +85,14 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td class="border px-4 py-2">
+                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
+                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -88,6 +105,7 @@
                         <thead>
                             <tr class="bg-gray-200">
                                 <th class="border px-4 py-2">No</th>
+                                <th class="border px-4 py-2">Foto</th>
                                 <th class="border px-4 py-2">NIDN</th>
                                 <th class="border px-4 py-2">Nama</th>
                                 <th class="border px-4 py-2">Skema</th>
@@ -97,6 +115,7 @@
                                 <th class="border px-4 py-2">Status</th>
                                 <th class="border px-4 py-2">Tahun</th>
                                 <th class="border px-4 py-2">Link Luaran</th>
+                                <th class="border px-4 py-2">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,6 +124,13 @@
                                 @foreach ($dosen->pengabdians as $pengabdian)
                                     <tr>
                                         <td class="border px-4 py-2">{{ $no++ }}</td>
+                                        <td class="border px-4 py-2">
+                                            @if ($dosen->foto)
+                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
+                                            @else
+                                                <span>Tidak ada foto</span>
+                                            @endif
+                                        </td>
                                         <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
                                         <td class="border px-4 py-2">{{ $dosen->nama }}</td>
                                         <td class="border px-4 py-2">{{ $pengabdian->skema }}</td>
@@ -120,6 +146,14 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td class="border px-4 py-2">
+                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
+                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -132,11 +166,13 @@
                         <thead>
                             <tr class="bg-gray-200">
                                 <th class="border px-4 py-2">No</th>
+                                <th class="border px-4 py-2">Foto</th>
                                 <th class="border px-4 py-2">NIDN</th>
                                 <th class="border px-4 py-2">Nama</th>
                                 <th class="border px-4 py-2">Judul HAKI</th>
                                 <th class="border px-4 py-2">Expired</th>
                                 <th class="border px-4 py-2">Link</th>
+                                <th class="border px-4 py-2">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,6 +181,13 @@
                                 @foreach ($dosen->hakis as $haki)
                                     <tr>
                                         <td class="border px-4 py-2">{{ $no++ }}</td>
+                                        <td class="border px-4 py-2">
+                                            @if ($dosen->foto)
+                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
+                                            @else
+                                                <span>Tidak ada foto</span>
+                                            @endif
+                                        </td>
                                         <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
                                         <td class="border px-4 py-2">{{ $dosen->nama }}</td>
                                         <td class="border px-4 py-2">{{ $haki->judul_haki }}</td>
@@ -162,6 +205,14 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td class="border px-4 py-2">
+                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
+                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -174,12 +225,14 @@
                         <thead>
                             <tr class="bg-gray-200">
                                 <th class="border px-4 py-2">No</th>
+                                <th class="border px-4 py-2">Foto</th>
                                 <th class="border px-4 py-2">NIDN</th>
                                 <th class="border px-4 py-2">Nama</th>
                                 <th class="border px-4 py-2">Judul Paten</th>
                                 <th class="border px-4 py-2">Jenis Paten</th>
                                 <th class="border px-4 py-2">Expired</th>
                                 <th class="border px-4 py-2">Link</th>
+                                <th class="border px-4 py-2">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -188,6 +241,13 @@
                                 @foreach ($dosen->patens as $paten)
                                     <tr>
                                         <td class="border px-4 py-2">{{ $no++ }}</td>
+                                        <td class="border px-4 py-2">
+                                            @if ($dosen->foto)
+                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
+                                            @else
+                                                <span>Tidak ada foto</span>
+                                            @endif
+                                        </td>
                                         <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
                                         <td class="border px-4 py-2">{{ $dosen->nama }}</td>
                                         <td class="border px-4 py-2">{{ $paten->judul_paten }}</td>
@@ -206,6 +266,14 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td class="border px-4 py-2">
+                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
+                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -223,6 +291,10 @@
                 $('#' + $(this).data('tab')).removeClass('hidden');
                 $(this).addClass('bg-gray-100');
             });
+            // Aktifkan tab pertama secara default
+            if ($('.tab-link').length > 0) {
+                $('.tab-link').eq(0).click();
+            }
         });
     </script>
 </body>
