@@ -29,4 +29,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/dosen/{id}', [DosenController::class, 'update'])->name('admin.dosen.update');
     Route::delete('/dosen/{id}', [DosenController::class, 'destroy'])->name('admin.dosen.destroy');
     Route::post('/dosen/import', [DosenController::class, 'import'])->name('admin.dosen.import');
+    Route::get('admin/dosen/{id}', [DosenController::class, 'show'])->name('admin.dosen.show');
 });

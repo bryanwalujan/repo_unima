@@ -118,8 +118,8 @@ class DosenController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'nidn' => 'required|string|max:20|unique:dosens,nidn,' . $dosen->id,
-            'nip' => 'nullable|string|max:16',
-            'nuptk' => 'nullable|string|max:16',
+            'nip' => 'nullable|string|max:20',
+            'nuptk' => 'nullable|string|max:20',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'penelitians.*.skema' => 'nullable|string',
             'penelitians.*.posisi' => 'nullable|string',
