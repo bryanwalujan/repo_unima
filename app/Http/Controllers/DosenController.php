@@ -2,12 +2,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dosen;
+use App\Imports\DosenImport;
 use App\Models\Penelitian;
 use App\Models\Pengabdian;
 use App\Models\Haki;
 use App\Models\Paten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DosenController extends Controller
 {
@@ -210,5 +212,15 @@ class DosenController extends Controller
         $dosen->delete();
 
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
+    }
+
+   public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        Excel::import(new DosenImport, $request->file('file'));
+        return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimpor.');
     }
 }

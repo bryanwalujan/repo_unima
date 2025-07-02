@@ -1,97 +1,197 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Manajemen Dosen</title>
+    <title>Manajemen Dosen - UNIMA</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .tab-link.active {
+            @apply bg-white text-green-700 border-t-2 border-green-600 font-medium;
+        }
+        .status-badge {
+            @apply px-2 py-1 rounded-full text-xs font-medium;
+        }
+        .status-selesai { @apply bg-green-100 text-green-800; }
+        .status-berjalan { @apply bg-yellow-100 text-yellow-800; }
+        .status-diajukan { @apply bg-blue-100 text-blue-800; }
+        .card-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .action-btn { @apply transition-all duration-200 hover:opacity-80; }
+        .table-row:hover { @apply bg-gray-50; }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Manajemen Dosen</h2>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-                <a href="{{ route('admin.dosen.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Tambah Dosen</a>
-                <form action="{{ route('admin.dosen.import') }}" method="POST" enctype="multipart/form-data" class="inline-block">
-                    @csrf
-                    <input type="file" name="file" accept=".xlsx,.xls" class="inline-block">
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Impor Excel</button>
-                </form>
-                <form action="{{ route('logout') }}" method="POST" class="inline-block">
-                    @csrf
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
-                </form>
+                <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-user-tie text-green-600 mr-2"></i>Manajemen Data Dosen
+                </h1>
+                <p class="text-gray-600 mt-1">Repositori Fakultas Teknik Informatika UNIMA</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <a href="{{ route('admin.dosen.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-plus-circle"></i> Tambah Dosen
+                </a>
+                
+                <div class="flex gap-2">
+                    <!-- Perbaikan Form Import Excel -->
+                    <form action="{{ route('admin.dosen.import') }}" method="POST" enctype="multipart/form-data" class="flex">
+                        @csrf
+                        <div class="file-input-wrapper">
+                            <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-l-lg flex items-center gap-2">
+                                <i class="fas fa-file-excel"></i> Pilih File
+                            </button>
+                            <input type="file" name="file" accept=".xlsx,.xls" id="fileInput">
+                        </div>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-r-lg flex items-center gap-2">
+                            <i class="fas fa-upload"></i> Impor
+                        </button>
+                    </form>
+                    
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 h-full">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <div class="tabs">
-                <ul class="flex border-b">
-                    <li class="mr-1">
-                        <a class="tab-link bg-gray-100 px-4 py-2 inline-block" data-tab="penelitian">Penelitian</a>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-xl card-shadow overflow-hidden">
+            <!-- Tab Navigation -->
+            <div class="border-b">
+                <ul class="flex flex-wrap">
+                    <li class="flex-1 min-w-[150px]">
+                        <a class="tab-link py-4 px-6 block text-center hover:bg-gray-50 active" data-tab="penelitian">
+                            <i class="fas fa-flask mr-2"></i>Penelitian
+                        </a>
                     </li>
-                    <li class="mr-1">
-                        <a class="tab-link px-4 py-2 inline-block" data-tab="pengabdian">Pengabdian</a>
+                    <li class="flex-1 min-w-[150px]">
+                        <a class="tab-link py-4 px-6 block text-center hover:bg-gray-50" data-tab="pengabdian">
+                            <i class="fas fa-hands-helping mr-2"></i>Pengabdian
+                        </a>
                     </li>
-                    <li class="mr-1">
-                        <a class="tab-link px-4 py-2 inline-block" data-tab="haki">HAKI</a>
+                    <li class="flex-1 min-w-[150px]">
+                        <a class="tab-link py-4 px-6 block text-center hover:bg-gray-50" data-tab="haki">
+                            <i class="fas fa-copyright mr-2"></i>HAKI
+                        </a>
                     </li>
-                    <li class="mr-1">
-                        <a class="tab-link px-4 py-2 inline-block" data-tab="paten">Paten</a>
+                    <li class="flex-1 min-w-[150px]">
+                        <a class="tab-link py-4 px-6 block text-center hover:bg-gray-50" data-tab="paten">
+                            <i class="fas fa-certificate mr-2"></i>Paten
+                        </a>
                     </li>
                 </ul>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-4 overflow-x-auto">
+                <!-- Penelitian Tab -->
                 <div id="penelitian" class="tab-content">
-                    <h3 class="text-xl font-semibold mb-4">Data Penelitian</h3>
-                    <table class="w-full border">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-flask text-green-600 mr-2"></i> Data Penelitian
+                        </h3>
+                        <div class="relative w-full md:w-64">
+                            <input type="text" placeholder="Cari data penelitian..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <table class="w-full min-w-max">
                         <thead>
-                            <tr class="bg-gray-200">
-                                <th class="border px-4 py-2">No</th>
-                                <th class="border px-4 py-2">Foto</th>
-                                <th class="border px-4 py-2">NIDN</th>
-                                <th class="border px-4 py-2">Nama</th>
-                                <th class="border px-4 py-2">Skema</th>
-                                <th class="border px-4 py-2">Posisi</th>
-                                <th class="border px-4 py-2">Judul Penelitian</th>
-                                <th class="border px-4 py-2">Sumber Dana</th>
-                                <th class="border px-4 py-2">Status</th>
-                                <th class="border px-4 py-2">Tahun</th>
-                                <th class="border px-4 py-2">Link Luaran</th>
-                                <th class="border px-4 py-2">Aksi</th>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">No</th>
+                                <th class="py-3 px-4 text-left">Dosen</th>
+                                <th class="py-3 px-4 text-left">Judul Penelitian</th>
+                                <th class="py-3 px-4 text-left">Skema</th>
+                                <th class="py-3 px-4 text-left">Posisi</th>
+                                <th class="py-3 px-4 text-left">Sumber Dana</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Tahun</th>
+                                <th class="py-3 px-4 text-left">Luaran</th>
+                                <th class="py-3 px-4 text-center rounded-tr-lg">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach ($dosens as $dosen)
                                 @foreach ($dosen->penelitians as $penelitian)
-                                    <tr>
-                                        <td class="border px-4 py-2">{{ $no++ }}</td>
-                                        <td class="border px-4 py-2">
-                                            @if ($dosen->foto)
-                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
-                                            @else
-                                                <span>Tidak ada foto</span>
-                                            @endif
+                                    <tr class="table-row">
+                                        <td class="py-3 px-4 border-b">{{ $no++ }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    @if ($dosen->foto)
+                                                        <img src="{{ Storage::url($dosen->foto) }}" alt="{{ $dosen->nama }}" class="h-10 w-10 rounded-full object-cover border">
+                                                    @else
+                                                        <div class="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 flex items-center justify-center text-gray-500">
+                                                            <i class="fas fa-user text-sm"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="font-medium text-gray-900">{{ $dosen->nama }}</div>
+                                                    <div class="text-gray-500 text-xs">{{ $dosen->nidn }}</div>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
-                                        <td class="border px-4 py-2">{{ $dosen->nama }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->skema }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->posisi }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->judul_penelitian }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->sumber_dana }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->status }}</td>
-                                        <td class="border px-4 py-2">{{ $penelitian->tahun }}</td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b max-w-xs">
+                                            <div class="font-medium">{{ $penelitian->judul_penelitian }}</div>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">{{ $penelitian->skema }}</td>
+                                        <td class="py-3 px-4 border-b">{{ $penelitian->posisi }}</td>
+                                        <td class="py-3 px-4 border-b">{{ $penelitian->sumber_dana }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            @php
+                                                $statusClass = 'status-diajukan';
+                                                if ($penelitian->status == 'Selesai') $statusClass = 'status-selesai';
+                                                elseif ($penelitian->status == 'Berjalan') $statusClass = 'status-berjalan';
+                                            @endphp
+                                            <span class="status-badge {{ $statusClass }}">{{ $penelitian->status }}</span>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">{{ $penelitian->tahun }}</td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($penelitian->link_luaran)
-                                                <a href="{{ $penelitian->link_luaran }}" target="_blank">Link</a>
+                                                <a href="{{ $penelitian->link_luaran }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                                    <i class="fas fa-external-link-alt text-xs"></i> Link
+                                                </a>
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
-                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
-                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                                            </form>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="text-blue-600 hover:text-blue-800 action-btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 action-btn" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -99,60 +199,94 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pengabdian Tab -->
                 <div id="pengabdian" class="tab-content hidden">
-                    <h3 class="text-xl font-semibold mb-4">Data Pengabdian</h3>
-                    <table class="w-full border">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-hands-helping text-green-600 mr-2"></i> Data Pengabdian
+                        </h3>
+                        <div class="relative w-full md:w-64">
+                            <input type="text" placeholder="Cari data pengabdian..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <table class="w-full min-w-max">
                         <thead>
-                            <tr class="bg-gray-200">
-                                <th class="border px-4 py-2">No</th>
-                                <th class="border px-4 py-2">Foto</th>
-                                <th class="border px-4 py-2">NIDN</th>
-                                <th class="border px-4 py-2">Nama</th>
-                                <th class="border px-4 py-2">Skema</th>
-                                <th class="border px-4 py-2">Posisi</th>
-                                <th class="border px-4 py-2">Judul Pengabdian</th>
-                                <th class="border px-4 py-2">Sumber Dana</th>
-                                <th class="border px-4 py-2">Status</th>
-                                <th class="border px-4 py-2">Tahun</th>
-                                <th class="border px-4 py-2">Link Luaran</th>
-                                <th class="border px-4 py-2">Aksi</th>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">No</th>
+                                <th class="py-3 px-4 text-left">Dosen</th>
+                                <th class="py-3 px-4 text-left">Judul Pengabdian</th>
+                                <th class="py-3 px-4 text-left">Skema</th>
+                                <th class="py-3 px-4 text-left">Posisi</th>
+                                <th class="py-3 px-4 text-left">Sumber Dana</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Tahun</th>
+                                <th class="py-3 px-4 text-left">Luaran</th>
+                                <th class="py-3 px-4 text-center rounded-tr-lg">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach ($dosens as $dosen)
                                 @foreach ($dosen->pengabdians as $pengabdian)
-                                    <tr>
-                                        <td class="border px-4 py-2">{{ $no++ }}</td>
-                                        <td class="border px-4 py-2">
-                                            @if ($dosen->foto)
-                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
-                                            @else
-                                                <span>Tidak ada foto</span>
-                                            @endif
+                                    <tr class="table-row">
+                                        <td class="py-3 px-4 border-b">{{ $no++ }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    @if ($dosen->foto)
+                                                        <img src="{{ Storage::url($dosen->foto) }}" alt="{{ $dosen->nama }}" class="h-10 w-10 rounded-full object-cover border">
+                                                    @else
+                                                        <div class="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 flex items-center justify-center text-gray-500">
+                                                            <i class="fas fa-user text-sm"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="font-medium text-gray-900">{{ $dosen->nama }}</div>
+                                                    <div class="text-gray-500 text-xs">{{ $dosen->nidn }}</div>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
-                                        <td class="border px-4 py-2">{{ $dosen->nama }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->skema }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->posisi }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->judul_pengabdian }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->sumber_dana }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->status }}</td>
-                                        <td class="border px-4 py-2">{{ $pengabdian->tahun }}</td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b max-w-xs">
+                                            <div class="font-medium">{{ $pengabdian->judul_pengabdian }}</div>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">{{ $pengabdian->skema }}</td>
+                                        <td class="py-3 px-4 border-b">{{ $pengabdian->posisi }}</td>
+                                        <td class="py-3 px-4 border-b">{{ $pengabdian->sumber_dana }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            @php
+                                                $statusClass = 'status-diajukan';
+                                                if ($pengabdian->status == 'Selesai') $statusClass = 'status-selesai';
+                                                elseif ($pengabdian->status == 'Berjalan') $statusClass = 'status-berjalan';
+                                            @endphp
+                                            <span class="status-badge {{ $statusClass }}">{{ $pengabdian->status }}</span>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">{{ $pengabdian->tahun }}</td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($pengabdian->link_luaran)
-                                                <a href="{{ $pengabdian->link_luaran }}" target="_blank">Link</a>
+                                                <a href="{{ $pengabdian->link_luaran }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                                    <i class="fas fa-external-link-alt text-xs"></i> Link
+                                                </a>
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
-                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
-                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                                            </form>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="text-blue-600 hover:text-blue-800 action-btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 action-btn" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -160,58 +294,95 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- HAKI Tab -->
                 <div id="haki" class="tab-content hidden">
-                    <h3 class="text-xl font-semibold mb-4">Data HAKI</h3>
-                    <table class="w-full border">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-copyright text-green-600 mr-2"></i> Data HAKI
+                        </h3>
+                        <div class="relative w-full md:w-64">
+                            <input type="text" placeholder="Cari data HAKI..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <table class="w-full min-w-max">
                         <thead>
-                            <tr class="bg-gray-200">
-                                <th class="border px-4 py-2">No</th>
-                                <th class="border px-4 py-2">Foto</th>
-                                <th class="border px-4 py-2">NIDN</th>
-                                <th class="border px-4 py-2">Nama</th>
-                                <th class="border px-4 py-2">Judul HAKI</th>
-                                <th class="border px-4 py-2">Expired</th>
-                                <th class="border px-4 py-2">Link</th>
-                                <th class="border px-4 py-2">Aksi</th>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">No</th>
+                                <th class="py-3 px-4 text-left">Dosen</th>
+                                <th class="py-3 px-4 text-left">Judul HAKI</th>
+                                <th class="py-3 px-4 text-left">Expired</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Link</th>
+                                <th class="py-3 px-4 text-center rounded-tr-lg">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach ($dosens as $dosen)
                                 @foreach ($dosen->hakis as $haki)
-                                    <tr>
-                                        <td class="border px-4 py-2">{{ $no++ }}</td>
-                                        <td class="border px-4 py-2">
-                                            @if ($dosen->foto)
-                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
-                                            @else
-                                                <span>Tidak ada foto</span>
-                                            @endif
+                                    <tr class="table-row">
+                                        <td class="py-3 px-4 border-b">{{ $no++ }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    @if ($dosen->foto)
+                                                        <img src="{{ Storage::url($dosen->foto) }}" alt="{{ $dosen->nama }}" class="h-10 w-10 rounded-full object-cover border">
+                                                    @else
+                                                        <div class="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 flex items-center justify-center text-gray-500">
+                                                            <i class="fas fa-user text-sm"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="font-medium text-gray-900">{{ $dosen->nama }}</div>
+                                                    <div class="text-gray-500 text-xs">{{ $dosen->nidn }}</div>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
-                                        <td class="border px-4 py-2">{{ $dosen->nama }}</td>
-                                        <td class="border px-4 py-2">{{ $haki->judul_haki }}</td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b max-w-xs">
+                                            <div class="font-medium">{{ $haki->judul_haki }}</div>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($haki->expired)
-                                                {{ \Carbon\Carbon::parse($haki->expired)->format('Y-m-d') }}
+                                                {{ \Carbon\Carbon::parse($haki->expired)->format('d M Y') }}
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b">
+                                            @php
+                                                $expiredDate = $haki->expired ? \Carbon\Carbon::parse($haki->expired) : null;
+                                                $isExpired = $expiredDate && $expiredDate->isPast();
+                                            @endphp
+                                            <span class="status-badge {{ $isExpired ? 'status-berjalan' : 'status-selesai' }}">
+                                                {{ $isExpired ? 'Expired' : 'Aktif' }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($haki->link)
-                                                <a href="{{ $haki->link }}" target="_blank">Link</a>
+                                                <a href="{{ $haki->link }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                                    <i class="fas fa-external-link-alt text-xs"></i> Link
+                                                </a>
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
-                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
-                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                                            </form>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="text-blue-600 hover:text-blue-800 action-btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 action-btn" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -219,60 +390,97 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Paten Tab -->
                 <div id="paten" class="tab-content hidden">
-                    <h3 class="text-xl font-semibold mb-4">Data Paten</h3>
-                    <table class="w-full border">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-certificate text-green-600 mr-2"></i> Data Paten
+                        </h3>
+                        <div class="relative w-full md:w-64">
+                            <input type="text" placeholder="Cari data paten..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <table class="w-full min-w-max">
                         <thead>
-                            <tr class="bg-gray-200">
-                                <th class="border px-4 py-2">No</th>
-                                <th class="border px-4 py-2">Foto</th>
-                                <th class="border px-4 py-2">NIDN</th>
-                                <th class="border px-4 py-2">Nama</th>
-                                <th class="border px-4 py-2">Judul Paten</th>
-                                <th class="border px-4 py-2">Jenis Paten</th>
-                                <th class="border px-4 py-2">Expired</th>
-                                <th class="border px-4 py-2">Link</th>
-                                <th class="border px-4 py-2">Aksi</th>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">No</th>
+                                <th class="py-3 px-4 text-left">Dosen</th>
+                                <th class="py-3 px-4 text-left">Judul Paten</th>
+                                <th class="py-3 px-4 text-left">Jenis</th>
+                                <th class="py-3 px-4 text-left">Expired</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Link</th>
+                                <th class="py-3 px-4 text-center rounded-tr-lg">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach ($dosens as $dosen)
                                 @foreach ($dosen->patens as $paten)
-                                    <tr>
-                                        <td class="border px-4 py-2">{{ $no++ }}</td>
-                                        <td class="border px-4 py-2">
-                                            @if ($dosen->foto)
-                                                <img src="{{ Storage::url($dosen->foto) }}" alt="Foto {{ $dosen->nama }}" class="w-16 h-16 object-cover rounded-full">
-                                            @else
-                                                <span>Tidak ada foto</span>
-                                            @endif
+                                    <tr class="table-row">
+                                        <td class="py-3 px-4 border-b">{{ $no++ }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    @if ($dosen->foto)
+                                                        <img src="{{ Storage::url($dosen->foto) }}" alt="{{ $dosen->nama }}" class="h-10 w-10 rounded-full object-cover border">
+                                                    @else
+                                                        <div class="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 flex items-center justify-center text-gray-500">
+                                                            <i class="fas fa-user text-sm"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="font-medium text-gray-900">{{ $dosen->nama }}</div>
+                                                    <div class="text-gray-500 text-xs">{{ $dosen->nidn }}</div>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="border px-4 py-2">{{ $dosen->nidn }}</td>
-                                        <td class="border px-4 py-2">{{ $dosen->nama }}</td>
-                                        <td class="border px-4 py-2">{{ $paten->judul_paten }}</td>
-                                        <td class="border px-4 py-2">{{ $paten->jenis_paten }}</td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b max-w-xs">
+                                            <div class="font-medium">{{ $paten->judul_paten }}</div>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">{{ $paten->jenis_paten }}</td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($paten->expired)
-                                                {{ \Carbon\Carbon::parse($paten->expired)->format('Y-m-d') }}
+                                                {{ \Carbon\Carbon::parse($paten->expired)->format('d M Y') }}
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
+                                        <td class="py-3 px-4 border-b">
+                                            @php
+                                                $expiredDate = $paten->expired ? \Carbon\Carbon::parse($paten->expired) : null;
+                                                $isExpired = $expiredDate && $expiredDate->isPast();
+                                            @endphp
+                                            <span class="status-badge {{ $isExpired ? 'status-berjalan' : 'status-selesai' }}">
+                                                {{ $isExpired ? 'Expired' : 'Aktif' }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 border-b">
                                             @if ($paten->link)
-                                                <a href="{{ $paten->link }}" target="_blank">Link</a>
+                                                <a href="{{ $paten->link }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                                    <i class="fas fa-external-link-alt text-xs"></i> Link
+                                                </a>
                                             @else
-                                                -
+                                                <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="border px-4 py-2">
-                                            <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</a>
-                                            <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                                            </form>
+                                        <td class="py-3 px-4 border-b">
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.dosen.edit', $dosen->id) }}" class="text-blue-600 hover:text-blue-800 action-btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.dosen.destroy', $dosen->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 action-btn" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -283,18 +491,28 @@
             </div>
         </div>
     </div>
+
     <script>
         $(document).ready(function() {
-            $('.tab-link').click(function() {
+            // Tab switching functionality
+            $('.tab-link').click(function(e) {
+                e.preventDefault();
                 $('.tab-content').addClass('hidden');
-                $('.tab-link').removeClass('bg-gray-100');
+                $('.tab-link').removeClass('active bg-gray-100');
                 $('#' + $(this).data('tab')).removeClass('hidden');
-                $(this).addClass('bg-gray-100');
+                $(this).addClass('active');
             });
-            // Aktifkan tab pertama secara default
-            if ($('.tab-link').length > 0) {
-                $('.tab-link').eq(0).click();
-            }
+
+            // Initialize first tab
+            $('.tab-link:first').click();
+            
+            // File input styling
+            $('#fileInput').change(function() {
+                if (this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    $(this).siblings('button').html(`<i class="fas fa-file-excel"></i> ${fileName}`);
+                }
+            });
         });
     </script>
 </body>
