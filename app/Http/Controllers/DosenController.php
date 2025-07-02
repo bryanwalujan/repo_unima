@@ -58,7 +58,6 @@ class DosenController extends Controller
 
         $dosen = Dosen::create($data);
 
-        // Simpan penelitian
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
                 if ($penelitian['judul_penelitian']) {
@@ -67,7 +66,6 @@ class DosenController extends Controller
             }
         }
 
-        // Simpan pengabdian
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
                 if ($pengabdian['judul_pengabdian']) {
@@ -76,7 +74,6 @@ class DosenController extends Controller
             }
         }
 
-        // Simpan HAKI
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
                 if ($haki['judul_haki']) {
@@ -85,7 +82,6 @@ class DosenController extends Controller
             }
         }
 
-        // Simpan paten
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
                 if ($paten['judul_paten']) {
@@ -103,6 +99,12 @@ class DosenController extends Controller
         return view('admin.dosen.index', compact('dosens'));
     }
 
+    public function show($id)
+    {
+        $dosen = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->findOrFail($id);
+        return view('admin.dosen.show', compact('dosen'));
+    }
+
     public function edit($id)
     {
         $dosen = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->findOrFail($id);
@@ -116,8 +118,8 @@ class DosenController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'nidn' => 'required|string|max:20|unique:dosens,nidn,' . $dosen->id,
-            'nip' => 'nullable|string|max:20',
-            'nuptk' => 'nullable|string|max:20',
+            'nip' => 'nullable|string|max:16',
+            'nuptk' => 'nullable|string|max:16',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'penelitians.*.skema' => 'nullable|string',
             'penelitians.*.posisi' => 'nullable|string',
@@ -154,7 +156,6 @@ class DosenController extends Controller
 
         $dosen->update($data);
 
-        // Hapus dan simpan ulang penelitian
         $dosen->penelitians()->delete();
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
@@ -164,7 +165,6 @@ class DosenController extends Controller
             }
         }
 
-        // Hapus dan simpan ulang pengabdian
         $dosen->pengabdians()->delete();
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
@@ -174,7 +174,6 @@ class DosenController extends Controller
             }
         }
 
-        // Hapus dan simpan ulang HAKI
         $dosen->hakis()->delete();
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
@@ -184,7 +183,6 @@ class DosenController extends Controller
             }
         }
 
-        // Hapus dan simpan ulang paten
         $dosen->patens()->delete();
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
@@ -214,13 +212,17 @@ class DosenController extends Controller
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
     }
 
-   public function import(Request $request)
+    public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
+            'file' => 'required|mimes:xlsx,xls|max:2048',
         ]);
 
-        Excel::import(new DosenImport, $request->file('file'));
-        return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimpor.');
+        try {
+            Excel::import(new DosenImport, $request->file('file'));
+            return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimpor.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+        }
     }
 }

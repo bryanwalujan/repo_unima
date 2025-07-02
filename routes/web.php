@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 // Rute Publik
 Route::get('/', [PublicController::class, 'index'])->name('public.index');
 Route::post('/search', [PublicController::class, 'search'])->name('public.search');
+Route::get('/', [PublicController::class, 'index'])->name('public.index');
+Route::post('/search', [PublicController::class, 'search'])->name('public.search');
+Route::get('/category/{category}', [PublicController::class, 'category'])->name('public.category');
 
 // Rute Autentikasi
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
