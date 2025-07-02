@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Route;
 // Rute Publik
 Route::get('/', [PublicController::class, 'index'])->name('public.index');
 Route::post('/search', [PublicController::class, 'search'])->name('public.search');
-Route::get('/', [PublicController::class, 'index'])->name('public.index');
-Route::post('/search', [PublicController::class, 'search'])->name('public.search');
 Route::get('/category/{category}', [PublicController::class, 'category'])->name('public.category');
 
 // Rute Autentikasi
@@ -29,5 +27,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/dosen/{id}', [DosenController::class, 'update'])->name('admin.dosen.update');
     Route::delete('/dosen/{id}', [DosenController::class, 'destroy'])->name('admin.dosen.destroy');
     Route::post('/dosen/import', [DosenController::class, 'import'])->name('admin.dosen.import');
-    Route::get('admin/dosen/{id}', [DosenController::class, 'show'])->name('admin.dosen.show');
+    Route::get('/dosen/{id}', [DosenController::class, 'show'])->name('admin.dosen.show');
 });

@@ -1405,40 +1405,29 @@
                                         <div id="penelitian-{{ $dosen->id }}" class="tab-content">
                                             <div class="mb-6">
                                                 <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                                                    <i
-                                                        class="fas fa-flask text-blue-600 mr-2 hover:rotate-12 transition-transform"></i>
+                                                    <i class="fas fa-flask text-blue-600 mr-2 hover:rotate-12 transition-transform"></i>
                                                     Penelitian Dosen
                                                 </h3>
-                                                <div class="flex flex-wrap gap-4 mb-4">
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ !request()->has('skema') || request()->skema == 'all' ? 'tab-active' : '' }}"
-                                                        data-tab="penelitian-{{ $dosen->id }}-all" data-skema="all">
+                                                <div class="flex flex-wrap gap-4 mb-4 skema-filter">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema', 'all') === 'all' ? 'tab-active' : '' }}"
+                                                    data-skema="all" data-tab="penelitian-{{ $dosen->id }}">
                                                         <div class="tab-title">Semua</div>
                                                         <div class="tab-count">{{ $dosen->penelitians->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'drtpm' ? 'tab-active' : '' }}"
-                                                        data-tab="penelitian-{{ $dosen->id }}-drtpm" data-skema="drtpm">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'drtpm' ? 'tab-active' : '' }}"
+                                                    data-skema="drtpm" data-tab="penelitian-{{ $dosen->id }}">
                                                         <div class="tab-title">DRTPM</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->penelitians->where('skema', 'drtpm')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->penelitians->where('skema', 'drtpm')->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'internal' ? 'tab-active' : '' }}"
-                                                        data-tab="penelitian-{{ $dosen->id }}-internal" data-skema="internal">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'internal' ? 'tab-active' : '' }}"
+                                                    data-skema="internal" data-tab="penelitian-{{ $dosen->id }}">
                                                         <div class="tab-title">Pendanaan Internal</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->penelitians->where('skema', 'internal')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->penelitians->where('skema', 'internal')->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'hibah' ? 'tab-active' : '' }}"
-                                                        data-tab="penelitian-{{ $dosen->id }}-hibah" data-skema="hibah">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'hibah' ? 'tab-active' : '' }}"
+                                                    data-skema="hibah" data-tab="penelitian-{{ $dosen->id }}">
                                                         <div class="tab-title">Pendanaan Hibah</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->penelitians->where('skema', 'hibah')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->penelitians->where('skema', 'hibah')->count() }}</div>
                                                     </a>
                                                 </div>
                                             </div>
@@ -1455,9 +1444,8 @@
                                                     </thead>
                                                     <tbody class="dosen-data" data-type="penelitian" data-id="{{ $dosen->id }}">
                                                         @foreach ($dosen->penelitians as $penelitian)
-                                                            <tr>
-                                                                <td
-                                                                    class="font-medium hover:text-blue-600 transition-colors cursor-pointer">
+                                                            <tr data-skema="{{ $penelitian->skema }}">
+                                                                <td class="font-medium hover:text-blue-600 transition-colors cursor-pointer">
                                                                     {{ $penelitian->judul_penelitian }}
                                                                 </td>
                                                                 <td>{{ ucfirst($penelitian->skema) }}</td>
@@ -1465,8 +1453,7 @@
                                                                 <td>
                                                                     @if($penelitian->status === 'Selesai')
                                                                         <span class="status-badge status-active">
-                                                                            <i
-                                                                                class="fas fa-check-circle mr-1"></i>{{ $penelitian->status }}
+                                                                            <i class="fas fa-check-circle mr-1"></i>{{ $penelitian->status }}
                                                                         </span>
                                                                     @else
                                                                         <span class="status-badge status-pending">
@@ -1477,9 +1464,8 @@
                                                             </tr>
                                                         @endforeach
                                                         @if ($dosen->penelitians->isEmpty())
-                                                            <tr>
-                                                                <td colspan="4" class="text-center py-4 text-gray-600">Tidak ada
-                                                                    data penelitian untuk kategori ini.</td>
+                                                            <tr data-skema="none">
+                                                                <td colspan="4" class="text-center py-4 text-gray-600">Tidak ada data penelitian untuk kategori ini.</td>
                                                             </tr>
                                                         @endif
                                                     </tbody>
@@ -1488,43 +1474,33 @@
                                         </div>
 
                                         <!-- Pengabdian -->
+                                       
                                         <div id="pengabdian-{{ $dosen->id }}" class="tab-content hidden">
                                             <div class="mb-6">
                                                 <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                                                    <i
-                                                        class="fas fa-hands-helping text-green-600 mr-2 hover:rotate-12 transition-transform"></i>
+                                                    <i class="fas fa-hands-helping text-green-600 mr-2 hover:rotate-12 transition-transform"></i>
                                                     Pengabdian Masyarakat
                                                 </h3>
-                                                <div class="flex flex-wrap gap-4 mb-4">
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ !request()->has('skema') || request()->skema == 'all' ? 'tab-active' : '' }}"
-                                                        data-tab="pengabdian-{{ $dosen->id }}-all" data-skema="all">
+                                                <div class="flex flex-wrap gap-4 mb-4 skema-filter">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema', 'all') === 'all' ? 'tab-active' : '' }}"
+                                                    data-skema="all" data-tab="pengabdian-{{ $dosen->id }}">
                                                         <div class="tab-title">Semua</div>
                                                         <div class="tab-count">{{ $dosen->pengabdians->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'drtpm' ? 'tab-active' : '' }}"
-                                                        data-tab="pengabdian-{{ $dosen->id }}-drtpm" data-skema="drtpm">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'drtpm' ? 'tab-active' : '' }}"
+                                                    data-skema="drtpm" data-tab="pengabdian-{{ $dosen->id }}">
                                                         <div class="tab-title">DRTPM</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->pengabdians->where('skema', 'drtpm')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->pengabdians->where('skema', 'drtpm')->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'internal' ? 'tab-active' : '' }}"
-                                                        data-tab="pengabdian-{{ $dosen->id }}-internal" data-skema="internal">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'internal' ? 'tab-active' : '' }}"
+                                                    data-skema="internal" data-tab="pengabdian-{{ $dosen->id }}">
                                                         <div class="tab-title">Pendanaan Internal</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->pengabdians->where('skema', 'internal')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->pengabdians->where('skema', 'internal')->count() }}</div>
                                                     </a>
-                                                    <a href="#"
-                                                        class="portfolio-tab tab-link {{ request()->skema == 'hibah' ? 'tab-active' : '' }}"
-                                                        data-tab="pengabdian-{{ $dosen->id }}-hibah" data-skema="hibah">
+                                                    <a href="#" class="portfolio-tab tab-link {{ request()->input('skema') === 'hibah' ? 'tab-active' : '' }}"
+                                                    data-skema="hibah" data-tab="pengabdian-{{ $dosen->id }}">
                                                         <div class="tab-title">Pendanaan Hibah</div>
-                                                        <div class="tab-count">
-                                                            {{ $dosen->pengabdians->where('skema', 'hibah')->count() }}
-                                                        </div>
+                                                        <div class="tab-count">{{ $dosen->pengabdians->where('skema', 'hibah')->count() }}</div>
                                                     </a>
                                                 </div>
                                             </div>
@@ -1541,9 +1517,8 @@
                                                     </thead>
                                                     <tbody class="dosen-data" data-type="pengabdian" data-id="{{ $dosen->id }}">
                                                         @foreach ($dosen->pengabdians as $pengabdian)
-                                                            <tr>
-                                                                <td
-                                                                    class="font-medium hover:text-green-600 transition-colors cursor-pointer">
+                                                            <tr data-skema="{{ $pengabdian->skema }}">
+                                                                <td class="font-medium hover:text-green-600 transition-colors cursor-pointer">
                                                                     {{ $pengabdian->judul_pengabdian }}
                                                                 </td>
                                                                 <td>{{ ucfirst($pengabdian->skema) }}</td>
@@ -1551,8 +1526,7 @@
                                                                 <td>
                                                                     @if($pengabdian->status === 'Selesai')
                                                                         <span class="status-badge status-active">
-                                                                            <i
-                                                                                class="fas fa-check-circle mr-1"></i>{{ $pengabdian->status }}
+                                                                            <i class="fas fa-check-circle mr-1"></i>{{ $pengabdian->status }}
                                                                         </span>
                                                                     @else
                                                                         <span class="status-badge status-pending">
@@ -1563,16 +1537,14 @@
                                                             </tr>
                                                         @endforeach
                                                         @if ($dosen->pengabdians->isEmpty())
-                                                            <tr>
-                                                                <td colspan="4" class="text-center py-4 text-gray-600">Tidak ada
-                                                                    data pengabdian untuk kategori ini.</td>
+                                                            <tr data-skema="none">
+                                                                <td colspan="4" class="text-center py-4 text-gray-600">Tidak ada data pengabdian untuk kategori ini.</td>
                                                             </tr>
                                                         @endif
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
-
                                         <!-- HAKI -->
                                         <div id="haki-{{ $dosen->id }}" class="tab-content hidden">
                                             <div class="mb-6">
@@ -1806,95 +1778,107 @@
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Tab functionality
-        $('.tab-link').on('click', function(e) {
-            e.preventDefault();
-            const tabId = $(this).data('tab');
-            const dosenId = $(this).closest('.dosen-card').data('dosen-id');
-            const skema = $(this).data('skema');
+$(document).ready(function() {
+    // Tab utama (Penelitian, Pengabdian, HAKI, Paten)
+    $('.tab-link:not(.skema-filter .tab-link)').on('click', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        const tabId = $this.data('tab');
+        const dosenId = $this.closest('.dosen-card').data('dosen-id');
 
-            $(this).closest('.tab-group').find('.tab-active').removeClass('tab-active');
-            $(this).addClass('tab-active');
+        console.log('Main tab clicked:', { tabId, dosenId });
 
-            $(this).closest('.dosen-card').find('.tab-content').addClass('hidden');
-            $(`#${tabId}`).removeClass('hidden');
+        // Hapus kelas tab-active dari semua tab utama di grup tab yang sama
+        $this.closest('.tab-group').find('.tab-link').removeClass('tab-active');
+        $this.addClass('tab-active');
 
-            if (skema) {
-                const url = new URL(window.location);
-                url.searchParams.set('skema', skema);
-                window.history.pushState({}, '', url);
-                loadCategoryData(dosenId, tabId.split('-')[0], skema);
+        // Sembunyikan semua konten tab di dosen-card yang sama
+        $this.closest('.dosen-card').find('.tab-content').addClass('hidden');
+        $(`#${tabId}`).removeClass('hidden');
+
+        // Jika tab adalah penelitian atau pengabdian, terapkan filter skema berdasarkan URL
+        const type = tabId.split('-')[0];
+        if (type === 'penelitian' || type === 'pengabdian') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialSkema = urlParams.get('skema') || 'all';
+            filterSkema(dosenId, type, initialSkema);
+        }
+    });
+
+    // Filter skema (Semua, DRTPM, Internal, Hibah)
+    $('.skema-filter .tab-link').on('click', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        const skema = $this.data('skema');
+        const tabId = $this.data('tab');
+        const dosenId = $this.closest('.dosen-card').data('dosen-id');
+        const type = tabId.split('-')[0];
+
+        console.log('Skema filter clicked:', { tabId, dosenId, skema, type });
+
+        // Hapus kelas tab-active dari semua tab skema di grup yang sama
+        $this.closest('.skema-filter').find('.tab-link').removeClass('tab-active');
+        $this.addClass('tab-active');
+
+        // Perbarui URL tanpa reload
+        const url = new URL(window.location);
+        url.searchParams.set('skema', skema);
+        window.history.pushState({}, '', url);
+
+        // Terapkan filter
+        filterSkema(dosenId, type, skema);
+    });
+
+    // Fungsi untuk memfilter baris tabel berdasarkan skema
+    function filterSkema(dosenId, type, skema) {
+        console.log('Filtering data for:', { dosenId, type, skema });
+        const tbody = $(`.dosen-data[data-type="${type}"][data-id="${dosenId}"]`);
+        const rows = tbody.find('tr');
+
+        rows.each(function() {
+            const rowSkema = $(this).data('skema');
+            if (skema === 'all' || rowSkema === skema) {
+                $(this).show();
+            } else {
+                $(this).hide();
             }
         });
 
-        // Load initial category data if skema is set
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialSkema = urlParams.get('skema');
-        if (initialSkema) {
-            $('.dosen-card').each(function() {
-                const dosenId = $(this).data('dosen-id');
-                const tabId = $(`[data-tab="${initialSkema}-${dosenId}"]`).data('tab');
-                if (tabId) {
-                    $(this).find('.tab-link').removeClass('tab-active');
-                    $(`[data-tab="${tabId}"]`).addClass('tab-active');
-                    $(this).find('.tab-content').addClass('hidden');
-                    $(`#${tabId}`).removeClass('hidden');
-                    loadCategoryData(dosenId, tabId.split('-')[0], initialSkema);
-                }
-            });
+        // Periksa apakah ada baris yang ditampilkan
+        const visibleRows = tbody.find('tr:visible').length;
+        if (visibleRows === 0) {
+            tbody.find('tr[data-skema="none"]').show();
+        } else {
+            tbody.find('tr[data-skema="none"]').hide();
         }
+    }
 
-        function loadCategoryData(dosenId, type, skema) {
-            $.ajax({
-                url: `/api/dosen/${dosenId}/${type}`,
-                data: { skema: skema },
-                success: function(response) {
-                    const tbody = $(`.dosen-data[data-type="${type}"][data-id="${dosenId}"]`);
-                    tbody.empty();
-                    if (response.data.length > 0) {
-                        response.data.forEach(item => {
-                            let statusBadge = '';
-                            if (type === 'penelitian' || type === 'pengabdian') {
-                                statusBadge = item.status === 'Selesai' ?
-                                    `<span class="status-badge status-active"><i class="fas fa-check-circle mr-1"></i>${item.status}</span>` :
-                                    `<span class="status-badge status-pending"><i class="fas fa-spinner mr-1"></i>${item.status}</span>`;
-                            } else if (type === 'haki' || type === 'paten') {
-                                const expired = item.expired ? new Date(item.expired).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
-                                statusBadge = item.expired && new Date(item.expired) > new Date() ?
-                                    `<span class="status-badge status-active"><i class="fas fa-check-circle mr-1"></i>Aktif</span>` :
-                                    `<span class="status-badge status-expired"><i class="fas fa-exclamation-triangle mr-1"></i>Kadaluarsa</span>`;
-                                tbody.append(`
-                                    <tr>
-                                        <td class="font-medium hover:text-${type === 'haki' ? 'purple' : 'yellow'}-600 transition-colors cursor-pointer">${item.judul_${type}}</td>
-                                        ${type === 'paten' ? `<td>${item.jenis_paten}</td>` : ''}
-                                        <td>${expired}</td>
-                                        <td>${statusBadge}</td>
-                                    </tr>
-                                `);
-                            } else {
-                                statusBadge = item.status === 'Selesai' ?
-                                    `<span class="status-badge status-active"><i class="fas fa-check-circle mr-1"></i>${item.status}</span>` :
-                                    `<span class="status-badge status-pending"><i class="fas fa-spinner mr-1"></i>${item.status}</span>`;
-                                tbody.append(`
-                                    <tr>
-                                        <td class="font-medium hover:text-${type === 'penelitian' ? 'blue' : 'green'}-600 transition-colors cursor-pointer">${item[`judul_${type}`]}</td>
-                                        <td>${item.skema}</td>
-                                        <td>${item.tahun}</td>
-                                        <td>${statusBadge}</td>
-                                    </tr>
-                                `);
-                            }
-                        });
-                    } else {
-                        tbody.append('<tr><td colspan="' + (type === 'paten' ? '4' : type === 'haki' ? '3' : '4') + '" class="text-center py-4 text-gray-600">Tidak ada data ' + type + ' untuk kategori ini.</td></tr>');
-                    }
-                },
-                error: function() {
-                    alert('Terjadi kesalahan saat memuat data.');
+    // Inisialisasi tab dan filter berdasarkan parameter URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSkema = urlParams.get('skema') || 'all';
+    $('.dosen-card').each(function() {
+        const dosenId = $(this).data('dosen-id');
+
+        // Inisialisasi tab utama
+        const $activeMainTab = $(this).find('.tab-link.tab-active');
+        if ($activeMainTab.length) {
+            const tabId = $activeMainTab.data('tab');
+            $(this).find('.tab-content').addClass('hidden');
+            $(`#${tabId}`).removeClass('hidden');
+
+            // Inisialisasi filter skema
+            const type = tabId.split('-')[0];
+            if (type === 'penelitian' || type === 'pengabdian') {
+                const $activeSkemaTab = $(this).find(`.skema-filter .tab-link[data-skema="${initialSkema}"]`);
+                if ($activeSkemaTab.length) {
+                    $(this).find('.skema-filter .tab-link').removeClass('tab-active');
+                    $activeSkemaTab.addClass('tab-active');
+                    filterSkema(dosenId, type, initialSkema);
                 }
-            });
+            }
         }
     });
+});
 </script>
