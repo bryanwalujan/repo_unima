@@ -56,6 +56,11 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" value="{{ old('email', $dosen->email) }}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">NIDN <span class="text-red-500">*</span></label>
                             <input type="text" name="nidn" value="{{ old('nidn', $dosen->nidn) }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
@@ -111,6 +116,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                     <select name="penelitians[{{$index}}][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         <option value="" disabled {{ old('penelitians.' . $index . '.skema', $penelitian->skema) ? '' : 'selected' }}>Pilih Skema</option>
+                                        <option value="-" {{ old('penelitians.' . $index . '.skema', $penelitian->skema) == '-' ? 'selected' : '' }}>-</option>
                                         <option value="drtpm" {{ old('penelitians.' . $index . '.skema', $penelitian->skema) == 'drtpm' ? 'selected' : '' }}>DRTPM</option>
                                         <option value="internal" {{ old('penelitians.' . $index . '.skema', $penelitian->skema) == 'internal' ? 'selected' : '' }}>Pendanaan Internal</option>
                                         <option value="hibah" {{ old('penelitians.' . $index . '.skema', $penelitian->skema) == 'hibah' ? 'selected' : '' }}>Pendanaan Hibah</option>
@@ -155,6 +161,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                     <select name="penelitians[0][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         <option value="" selected>Pilih Skema</option>
+                                        <option value="-">-</option>
                                         <option value="drtpm">DRTPM</option>
                                         <option value="internal">Pendanaan Internal</option>
                                         <option value="hibah">Pendanaan Hibah</option>
@@ -215,6 +222,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                     <select name="pengabdians[{{$index}}][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         <option value="" disabled {{ old('pengabdians.' . $index . '.skema', $pengabdian->skema) ? '' : 'selected' }}>Pilih Skema</option>
+                                        <option value="-" {{ old('pengabdians.' . $index . '.skema', $pengabdian->skema) == '-' ? 'selected' : '' }}>-</option>
                                         <option value="drtpm" {{ old('pengabdians.' . $index . '.skema', $pengabdian->skema) == 'drtpm' ? 'selected' : '' }}>DRTPM</option>
                                         <option value="internal" {{ old('pengabdians.' . $index . '.skema', $pengabdian->skema) == 'internal' ? 'selected' : '' }}>Pendanaan Internal</option>
                                         <option value="hibah" {{ old('pengabdians.' . $index . '.skema', $pengabdian->skema) == 'hibah' ? 'selected' : '' }}>Pendanaan Hibah</option>
@@ -259,6 +267,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                     <select name="pengabdians[0][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         <option value="" selected>Pilih Skema</option>
+                                        <option value="-">-</option>
                                         <option value="drtpm">DRTPM</option>
                                         <option value="internal">Pendanaan Internal</option>
                                         <option value="hibah">Pendanaan Hibah</option>

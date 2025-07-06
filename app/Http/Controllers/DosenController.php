@@ -10,6 +10,9 @@ use App\Models\Paten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
 
 class DosenController extends Controller
 {
@@ -25,7 +28,7 @@ class DosenController extends Controller
             'nidn' => 'required|string|max:20|unique:dosens,nidn',
             'nip' => 'nullable|string|max:20',
             'nuptk' => 'nullable|string|max:20',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:10000',
             'penelitians.*.skema' => 'nullable|string',
             'penelitians.*.posisi' => 'nullable|string',
             'penelitians.*.judul_penelitian' => 'nullable|string',
@@ -117,10 +120,11 @@ class DosenController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:dosens,email,' . $dosen->id,
             'nidn' => 'required|string|max:20|unique:dosens,nidn,' . $dosen->id,
             'nip' => 'nullable|string|max:20',
             'nuptk' => 'nullable|string|max:20',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:10000',
             'penelitians.*.skema' => 'nullable|string',
             'penelitians.*.posisi' => 'nullable|string',
             'penelitians.*.judul_penelitian' => 'nullable|string',
@@ -144,7 +148,7 @@ class DosenController extends Controller
             'patens.*.link' => 'nullable|url',
         ]);
 
-        $data = $request->only(['nama', 'nidn', 'nip', 'nuptk']);
+        $data = $request->only(['nama', 'email', 'nidn', 'nip', 'nuptk']);
 
         if ($request->hasFile('foto')) {
             if ($dosen->foto) {
@@ -226,4 +230,190 @@ class DosenController extends Controller
         }
     }
 
+    public function editProfile()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+        return view('dosen.edit', compact('dosen'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nidn' => 'required|string|max:20|unique:dosens,nidn,' . $dosen->id,
+            'nip' => 'nullable|string|max:20',
+            'nuptk' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:10000',
+        ]);
+
+        $data = $request->only(['nama', 'nidn', 'nip', 'nuptk']);
+
+        if ($request->hasFile('foto')) {
+            if ($dosen->foto) {
+                Storage::disk('public')->delete($dosen->foto);
+            }
+            $path = $request->file('foto')->store('dosen', 'public');
+            $data['foto'] = $path;
+        }
+
+        $dosen->update($data);
+        return redirect()->route('dosen.dashboard')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function editPenelitian()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+        $penelitians = $dosen->penelitians;
+        return view('dosen.edit-penelitian', compact('dosen', 'penelitians'));
+    }
+
+    public function updatePenelitian(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $request->validate([
+            'penelitians.*.skema' => 'nullable|string',
+            'penelitians.*.posisi' => 'nullable|string',
+            'penelitians.*.judul_penelitian' => 'nullable|string',
+            'penelitians.*.sumber_dana' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.tahun' => 'nullable|integer',
+            'penelitians.*.link_luaran' => 'nullable|url',
+        ]);
+
+        $dosen->penelitians()->delete();
+        if ($request->has('penelitians')) {
+            foreach ($request->penelitians as $penelitian) {
+                if ($penelitian['judul_penelitian']) {
+                    $dosen->penelitians()->create($penelitian);
+                }
+            }
+        }
+
+        return redirect()->route('dosen.dashboard')->with('success', 'Penelitian berhasil diperbarui.');
+    }
+
+    public function editPengabdian()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+        $pengabdians = $dosen->pengabdians;
+        return view('dosen.edit-pengabdian', compact('dosen', 'pengabdians'));
+    }
+
+    public function updatePengabdian(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $request->validate([
+            'pengabdians.*.skema' => 'nullable|string',
+            'pengabdians.*.posisi' => 'nullable|string',
+            'pengabdians.*.judul_pengabdian' => 'nullable|string',
+            'pengabdians.*.sumber_dana' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.tahun' => 'nullable|integer',
+            'pengabdians.*.link_luaran' => 'nullable|url',
+        ]);
+
+        $dosen->pengabdians()->delete();
+        if ($request->has('pengabdians')) {
+            foreach ($request->pengabdians as $pengabdian) {
+                if ($pengabdian['judul_pengabdian']) {
+                    $dosen->pengabdians()->create($pengabdian);
+                }
+            }
+        }
+
+        return redirect()->route('dosen.dashboard')->with('success', 'Pengabdian berhasil diperbarui.');
+    }
+
+    public function editHaki()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+        $hakis = $dosen->hakis;
+        return view('dosen.edit-haki', compact('dosen', 'hakis'));
+    }
+
+    public function updateHaki(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $request->validate([
+            'hakis.*.judul_haki' => 'nullable|string',
+            'hakis.*.expired' => 'nullable|date',
+            'hakis.*.link' => 'nullable|url',
+        ]);
+
+        $dosen->hakis()->delete();
+        if ($request->has('hakis')) {
+            foreach ($request->hakis as $haki) {
+                if ($haki['judul_haki']) {
+                    $dosen->hakis()->create($haki);
+                }
+            }
+        }
+
+        return redirect()->route('dosen.dashboard')->with('success', 'HAKI berhasil diperbarui.');
+    }
+
+    public function editPaten()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+        $patens = $dosen->patens;
+        return view('dosen.edit-paten', compact('dosen', 'patens'));
+    }
+
+    public function updatePaten(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $request->validate([
+            'patens.*.judul_paten' => 'nullable|string',
+            'patens.*.jenis_paten' => 'nullable|string',
+            'patens.*.expired' => 'nullable|date',
+            'patens.*.link' => 'nullable|url',
+        ]);
+
+        $dosen->patens()->delete();
+        if ($request->has('patens')) {
+            foreach ($request->patens as $paten) {
+                if ($paten['judul_paten']) {
+                    $dosen->patens()->create($paten);
+                }
+            }
+        }
+
+        return redirect()->route('dosen.dashboard')->with('success', 'Paten berhasil diperbarui.');
+    }
 }

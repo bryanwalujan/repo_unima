@@ -1899,7 +1899,20 @@ body {
                     Sistem informasi repositori dosen Program Studi Teknik Informatika
                     Universitas Negeri Manado untuk mendukung transparansi dan akuntabilitas akademik.
                 </p>
-               
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 social-icon">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 social-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
             <div class="md:col-span-1">
                 <h3 class="text-xl font-bold mb-6">Kontak Kami</h3>
@@ -1910,38 +1923,52 @@ body {
                     </li>
                     <li class="flex items-center footer-contact-item">
                         <i class="fas fa-envelope mr-3 text-blue-400"></i>
-                        <span class="text-gray-400">teknikinformatika@unima.ac.id</span>
+                        <span class="text-gray-400">info@unima.ac.id</span>
                     </li>
-                    
+                    <li class="flex items-center footer-contact-item">
+                        <i class="fas fa-phone mr-3 text-blue-400"></i>
+                        <span class="text-gray-400">+62 431 123456</span>
+                    </li>
                 </ul>
             </div>
             <div class="md:col-span-1">
                 <h3 class="text-xl font-bold mb-6">Navigasi</h3>
                 <ul class="space-y-3">
                     <li>
-                        <a href="https://unima.ac.id/" class="footer-link text-gray-400 hover:text-blue-300">
-                            <i class="fas fa-home mr-2"></i> Universitas Negeri Manado
+                        <a href="{{ route('public.index') }}" class="footer-link text-gray-400 hover:text-blue-300">
+                            <i class="fas fa-home mr-2"></i> Beranda
                         </a>
                     </li>
                     <li>
-                        <a href="https://si.unima.ac.id/gtakademik_portal/"
+                        <a href="{{ route('public.category', ['category' => 'dosens']) }}"
                             class="footer-link text-gray-400 hover:text-blue-300">
-                            <i class="fas fa-users mr-2"></i> Portal Akademik
+                            <i class="fas fa-users mr-2"></i> Dosen
                         </a>
                     </li>
                     <li>
-                        <a href="https://ti.unima.ac.id/"
+                        <a href="{{ route('public.category', ['category' => 'penelitians']) }}"
                             class="footer-link text-gray-400 hover:text-blue-300">
-                            <i class="fas fa-flask mr-2"></i> Portal TI
+                            <i class="fas fa-flask mr-2"></i> Penelitian
                         </a>
                     </li>
                     <li>
-                        <a href="https://presma.ti.unima.ac.id/"
+                        <a href="{{ route('public.category', ['category' => 'pengabdians']) }}"
                             class="footer-link text-gray-400 hover:text-blue-300">
-                            <i class="fas fa-hands-helping mr-2"></i> Presma TI
+                            <i class="fas fa-hands-helping mr-2"></i> Pengabdian
                         </a>
                     </li>
-                    
+                    <li>
+                        <a href="{{ route('public.category', ['category' => 'hakis']) }}"
+                            class="footer-link text-gray-400 hover:text-blue-300">
+                            <i class="fas fa-copyright mr-2"></i> HAKI
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('public.category', ['category' => 'patens']) }}"
+                            class="footer-link text-gray-400 hover:text-blue-300">
+                            <i class="fas fa-book mr-2"></i> Paten
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
