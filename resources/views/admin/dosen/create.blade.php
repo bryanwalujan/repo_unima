@@ -55,6 +55,11 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                            <input type="email" name="email"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">NIDN <span class="text-red-500">*</span></label>
                             <input type="text" name="nidn" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
@@ -105,6 +110,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                 <select name="penelitians[0][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                     <option value="" selected>Pilih Skema</option>
+                                    <option value="-">-</option>
                                     <option value="drtpm">DRTPM</option>
                                     <option value="internal">Pendanaan Internal</option>
                                     <option value="hibah">Pendanaan Hibah</option>
@@ -163,6 +169,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Skema</label>
                                 <select name="pengabdians[0][skema]" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                     <option value="" selected>Pilih Skema</option>
+                                    <option value="-">-</option>
                                     <option value="drtpm">DRTPM</option>
                                     <option value="internal">Pendanaan Internal</option>
                                     <option value="hibah">Pendanaan Hibah</option>
