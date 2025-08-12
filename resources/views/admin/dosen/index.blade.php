@@ -776,144 +776,151 @@
         </main>
     </div>
 
-    
+<!-- Hanya bagian JavaScript yang diperbarui ditampilkan untuk ringkas -->
 <script>
-        $(document).ready(function () {
-            // Tab navigation
-            $('.tab-link').click(function () {
-                $('.tab-link').removeClass('active');
-                $(this).addClass('active');
-                $('.tab-content').addClass('hidden');
-                $('#' + $(this).data('tab')).removeClass('hidden');
-            });
+    $(document).ready(function () {
+        // Tab navigation
+        $('.tab-link').click(function () {
+            $('.tab-link').removeClass('active');
+            $(this).addClass('active');
+            $('.tab-content').addClass('hidden');
+            $('#' + $(this).data('tab')).removeClass('hidden');
+        });
 
-            // Search functionality for dosen
-            $('#search-dosen').on('input', function () {
-                let value = $(this).val().toLowerCase();
-                $('#dosen-table tr').filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+        // Search functionality for dosen
+        $('#search-dosen').on('input', function () {
+            let value = $(this).val().toLowerCase();
+            $('#dosen-table tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
+        });
 
-            // Search functionality for penelitian
-            $('.search-penelitian').on('input', function () {
-                let value = $(this).val().toLowerCase();
-                $('#penelitian tbody tr').filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+        // Search functionality for penelitian
+        $('.search-penelitian').on('input', function () {
+            let value = $(this).val().toLowerCase();
+            $('#penelitian tbody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
+        });
 
-            // Search functionality for pengabdian
-            $('.search-pengabdian').on('input', function () {
-                let value = $(this).val().toLowerCase();
-                $('#pengabdian tbody tr').filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+        // Search functionality for pengabdian
+        $('.search-pengabdian').on('input', function () {
+            let value = $(this).val().toLowerCase();
+            $('#pengabdian tbody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
+        });
 
-            // Search functionality for haki
-            $('.search-haki').on('input', function () {
-                let value = $(this).val().toLowerCase();
-                $('#haki tbody tr').filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+        // Search functionality for haki
+        $('.search-haki').on('input', function () {
+            let value = $(this).val().toLowerCase();
+            $('#haki tbody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
+        });
 
-            // Search functionality for paten
-            $('.search-paten').on('input', function () {
-                let value = $(this).val().toLowerCase();
-                $('#paten tbody tr').filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+        // Search functionality for paten
+        $('.search-paten').on('input', function () {
+            let value = $(this).val().toLowerCase();
+            $('#paten tbody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
+        });
 
-            // Delete confirmation
-            $('.delete-form').on('submit', function (e) {
-                e.preventDefault();
-                let form = $(this);
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Data yang dihapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form[0].submit();
-                    }
-                });
+        // Delete confirmation
+        $('.delete-form').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form[0].submit();
+                }
             });
+        });
 
-            // Sidebar toggle for mobile
-            $('#menu-toggle').click(function () {
-                $('.sidebar').toggleClass('active');
-            });
+        // Sidebar toggle for mobile
+        $('#menu-toggle').click(function () {
+            $('.sidebar').toggleClass('active');
+        });
 
-            // Recommendation button
-            $('.recommend-btn').click(function () {
-                let dosenId = $(this).data('dosen-id');
-                $.ajax({
-                    url: '{{ route("admin.dosen.recommend", ":id") }}'.replace(':id', dosenId),
-                    type: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        let modalContent = '';
-                        if (response.recommendations.length === 0) {
-                            modalContent = `<p class="text-red-600">${response.message}</p>`;
-                        } else {
-                            modalContent = '<ul class="list-disc pl-5 space-y-4">';
-                            response.recommendations.forEach(function (rec) {
-                                // Batasi kata kunci ke 3 item pertama
-                                let keywords = Array.isArray(rec.matched_keywords) 
-                                    ? (rec.matched_keywords.length > 3 
-                                        ? rec.matched_keywords.slice(0, 3).join(', ') + '...' 
-                                        : rec.matched_keywords.join(', ')) 
-                                    : (rec.matched_keywords || 'Tidak ada');
-                                modalContent += `
-                                    <li class="border-b pb-2">
-                                        <div class="flex justify-between">
-                                            <span class="font-semibold">${rec.nama} (NIDN: ${rec.nidn})</span>
-                                            <span class="text-blue-600">Skor: ${rec.score}</span>
-                                        </div>
-                                    </li>`;
-                            });
-                            modalContent += '</ul>';
-                        }
-                        $('#recommendation-content').html(modalContent);
-                        $('#recommendation-modal').removeClass('hidden').fadeIn();
-                    },
-                    error: function (xhr) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Gagal mengambil rekomendasi.',
-                            icon: 'error',
-                            confirmButtonColor: '#d33'
+        // Recommendation button
+        $('.recommend-btn').click(function () {
+            let dosenId = $(this).data('dosen-id');
+            $.ajax({
+                url: '{{ route("admin.dosen.recommend", ":id") }}'.replace(':id', dosenId),
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    let modalContent = '';
+                    if (response.recommendations.length === 0) {
+                        modalContent = `<p class="text-red-600">${response.message}</p>`;
+                    } else {
+                        modalContent = '<ul class="list-disc pl-5 space-y-4">';
+                        response.recommendations.forEach(function (rec) {
+                            // Ambil maksimal 3 kata kunci tanpa elipsis
+                            let keywords = Array.isArray(rec.matched_keywords) 
+                                ? rec.matched_keywords.slice(0, 3).join(', ') 
+                                : (rec.matched_keywords || 'Tidak ada');
+                            // Ambil 3 kata pertama dari setiap judul penelitian
+                            let penelitians = Array.isArray(rec.penelitians) 
+                                ? rec.penelitians.map(function (judul) {
+                                    return judul.split(/\s+/).slice(0, 3).join(' ');
+                                }).join(', ') 
+                                : 'Tidak ada';
+                            modalContent += `
+                                <li class="border-b pb-2">
+                                    <div class="flex justify-between">
+                                        <span class="font-semibold">${rec.nama} (NIDN: ${rec.nidn})</span>
+                                        <span class="text-blue-600">Skor: ${rec.score}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Kata Kunci: ${keywords}</p>
+                                    <p class="text-sm text-gray-600">Penelitian: ${penelitians}</p>
+                                    <p class="text-sm">Pengabdian: ${rec.pengabdians.length ? rec.pengabdians.join(', ') : 'Tidak ada'}</p>
+                                </li>`;
                         });
+                        modalContent += '</ul>';
                     }
-                });
-            });
-
-            // Close modal
-            $(document).on('click', '.modal-close', function () {
-                $('#recommendation-modal').fadeOut(function () {
-                    $(this).addClass('hidden');
-                });
-            });
-
-            // Close modal when clicking outside
-            $(document).on('click', '.modal', function (e) {
-                if (e.target.classList.contains('modal')) {
-                    $('#recommendation-modal').fadeOut(function () {
-                        $(this).addClass('hidden');
+                    $('#recommendation-content').html(modalContent);
+                    $('#recommendation-modal').removeClass('hidden').fadeIn();
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Gagal mengambil rekomendasi.',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
                     });
                 }
             });
         });
-    </script>
+
+        // Close modal
+        $(document).on('click', '.modal-close', function () {
+            $('#recommendation-modal').fadeOut(function () {
+                $(this).addClass('hidden');
+            });
+        });
+
+        // Close modal when clicking outside
+        $(document).on('click', '.modal', function (e) {
+            if (e.target.classList.contains('modal')) {
+                $('#recommendation-modal').fadeOut(function () {
+                    $(this).addClass('hidden');
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>
