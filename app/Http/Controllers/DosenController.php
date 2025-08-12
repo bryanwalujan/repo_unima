@@ -13,16 +13,40 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
+use App\Services\RecommendationService;
 
 class DosenController extends Controller
 {
+    protected $recommendationService;
+
+    public function __construct(RecommendationService $recommendationService)
+    {
+        $this->recommendationService = $recommendationService;
+    }
+
+    // Pemeriksaan admin secara manual
+    private function checkAdmin()
+    {
+        if (!Auth::guard('web')->check() || Auth::guard('web')->user()->role !== 'admin') {
+            return redirect()->route('login')->with('error', 'Akses ditolak. Hanya admin yang diizinkan.');
+        }
+        return null;
+    }
+
     public function create()
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
         return view('admin.dosen.create');
     }
 
     public function store(Request $request)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'nidn' => 'required|string|max:20|unique:dosens,nidn',
@@ -33,14 +57,14 @@ class DosenController extends Controller
             'penelitians.*.posisi' => 'nullable|string',
             'penelitians.*.judul_penelitian' => 'nullable|string',
             'penelitians.*.sumber_dana' => 'nullable|string',
-            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'penelitians.*.tahun' => 'nullable|integer',
             'penelitians.*.link_luaran' => 'nullable|url',
             'pengabdians.*.skema' => 'nullable|string',
             'pengabdians.*.posisi' => 'nullable|string',
             'pengabdians.*.judul_pengabdian' => 'nullable|string',
             'pengabdians.*.sumber_dana' => 'nullable|string',
-            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'pengabdians.*.tahun' => 'nullable|integer',
             'pengabdians.*.link_luaran' => 'nullable|url',
             'hakis.*.judul_haki' => 'nullable|string',
@@ -63,7 +87,7 @@ class DosenController extends Controller
 
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
-                if ($penelitian['judul_penelitian']) {
+                if (!empty($penelitian['judul_penelitian'])) {
                     $dosen->penelitians()->create($penelitian);
                 }
             }
@@ -71,7 +95,7 @@ class DosenController extends Controller
 
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
-                if ($pengabdian['judul_pengabdian']) {
+                if (!empty($pengabdian['judul_pengabdian'])) {
                     $dosen->pengabdians()->create($pengabdian);
                 }
             }
@@ -79,7 +103,7 @@ class DosenController extends Controller
 
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
-                if ($haki['judul_haki']) {
+                if (!empty($haki['judul_haki'])) {
                     $dosen->hakis()->create($haki);
                 }
             }
@@ -87,7 +111,7 @@ class DosenController extends Controller
 
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
-                if ($paten['judul_paten']) {
+                if (!empty($paten['judul_paten'])) {
                     $dosen->patens()->create($paten);
                 }
             }
@@ -98,24 +122,40 @@ class DosenController extends Controller
 
     public function index()
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $dosens = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->get();
         return view('admin.dosen.index', compact('dosens'));
     }
 
     public function show($id)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $dosen = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->findOrFail($id);
         return view('admin.dosen.show', compact('dosen'));
     }
 
     public function edit($id)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $dosen = Dosen::with(['penelitians', 'pengabdians', 'hakis', 'patens'])->findOrFail($id);
         return view('admin.dosen.edit', compact('dosen'));
     }
 
     public function update(Request $request, $id)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $dosen = Dosen::findOrFail($id);
 
         $request->validate([
@@ -129,14 +169,14 @@ class DosenController extends Controller
             'penelitians.*.posisi' => 'nullable|string',
             'penelitians.*.judul_penelitian' => 'nullable|string',
             'penelitians.*.sumber_dana' => 'nullable|string',
-            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'penelitians.*.tahun' => 'nullable|integer',
             'penelitians.*.link_luaran' => 'nullable|url',
             'pengabdians.*.skema' => 'nullable|string',
             'pengabdians.*.posisi' => 'nullable|string',
             'pengabdians.*.judul_pengabdian' => 'nullable|string',
             'pengabdians.*.sumber_dana' => 'nullable|string',
-            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'pengabdians.*.tahun' => 'nullable|integer',
             'pengabdians.*.link_luaran' => 'nullable|url',
             'hakis.*.judul_haki' => 'nullable|string',
@@ -163,7 +203,7 @@ class DosenController extends Controller
         $dosen->penelitians()->delete();
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
-                if ($penelitian['judul_penelitian']) {
+                if (!empty($penelitian['judul_penelitian'])) {
                     $dosen->penelitians()->create($penelitian);
                 }
             }
@@ -172,7 +212,7 @@ class DosenController extends Controller
         $dosen->pengabdians()->delete();
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
-                if ($pengabdian['judul_pengabdian']) {
+                if (!empty($pengabdian['judul_pengabdian'])) {
                     $dosen->pengabdians()->create($pengabdian);
                 }
             }
@@ -181,7 +221,7 @@ class DosenController extends Controller
         $dosen->hakis()->delete();
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
-                if ($haki['judul_haki']) {
+                if (!empty($haki['judul_haki'])) {
                     $dosen->hakis()->create($haki);
                 }
             }
@@ -190,7 +230,7 @@ class DosenController extends Controller
         $dosen->patens()->delete();
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
-                if ($paten['judul_paten']) {
+                if (!empty($paten['judul_paten'])) {
                     $dosen->patens()->create($paten);
                 }
             }
@@ -201,6 +241,10 @@ class DosenController extends Controller
 
     public function destroy($id)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $dosen = Dosen::findOrFail($id);
 
         if ($dosen->foto) {
@@ -216,8 +260,24 @@ class DosenController extends Controller
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
     }
 
+    public function destroyPenelitian($id)
+    {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
+        $penelitian = Penelitian::findOrFail($id);
+        $penelitian->delete();
+
+        return redirect()->route('admin.dosen.index')->with('success', 'Penelitian berhasil dihapus.');
+    }
+
     public function import(Request $request)
     {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls|max:2048',
         ]);
@@ -290,7 +350,7 @@ class DosenController extends Controller
             'penelitians.*.posisi' => 'nullable|string',
             'penelitians.*.judul_penelitian' => 'nullable|string',
             'penelitians.*.sumber_dana' => 'nullable|string',
-            'penelitians.*.status' => 'nullable|string',
+            'penelitians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'penelitians.*.tahun' => 'nullable|integer',
             'penelitians.*.link_luaran' => 'nullable|url',
         ]);
@@ -298,7 +358,7 @@ class DosenController extends Controller
         $dosen->penelitians()->delete();
         if ($request->has('penelitians')) {
             foreach ($request->penelitians as $penelitian) {
-                if ($penelitian['judul_penelitian']) {
+                if (!empty($penelitian['judul_penelitian'])) {
                     $dosen->penelitians()->create($penelitian);
                 }
             }
@@ -329,7 +389,7 @@ class DosenController extends Controller
             'pengabdians.*.posisi' => 'nullable|string',
             'pengabdians.*.judul_pengabdian' => 'nullable|string',
             'pengabdians.*.sumber_dana' => 'nullable|string',
-            'pengabdians.*.status' => 'nullable|string',
+            'pengabdians.*.status' => 'nullable|string|in:Selesai,Berjalan,Diajukan',
             'pengabdians.*.tahun' => 'nullable|integer',
             'pengabdians.*.link_luaran' => 'nullable|url',
         ]);
@@ -337,7 +397,7 @@ class DosenController extends Controller
         $dosen->pengabdians()->delete();
         if ($request->has('pengabdians')) {
             foreach ($request->pengabdians as $pengabdian) {
-                if ($pengabdian['judul_pengabdian']) {
+                if (!empty($pengabdian['judul_pengabdian'])) {
                     $dosen->pengabdians()->create($pengabdian);
                 }
             }
@@ -372,7 +432,7 @@ class DosenController extends Controller
         $dosen->hakis()->delete();
         if ($request->has('hakis')) {
             foreach ($request->hakis as $haki) {
-                if ($haki['judul_haki']) {
+                if (!empty($haki['judul_haki'])) {
                     $dosen->hakis()->create($haki);
                 }
             }
@@ -408,12 +468,23 @@ class DosenController extends Controller
         $dosen->patens()->delete();
         if ($request->has('patens')) {
             foreach ($request->patens as $paten) {
-                if ($paten['judul_paten']) {
+                if (!empty($paten['judul_paten'])) {
                     $dosen->patens()->create($paten);
                 }
             }
         }
 
         return redirect()->route('dosen.dashboard')->with('success', 'Paten berhasil diperbarui.');
+    }
+
+    public function recommend($id)
+    {
+        if ($redirect = $this->checkAdmin()) {
+            return $redirect;
+        }
+
+        $dosen = Dosen::findOrFail($id);
+        $recommendations = $this->recommendationService->getCollaborationRecommendations($id);
+        return response()->json($recommendations);
     }
 }

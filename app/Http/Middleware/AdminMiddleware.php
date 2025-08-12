@@ -9,13 +9,16 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Periksa apakah pengguna sudah login dan memiliki role admin
-        if (Auth::check() && Auth::user() instanceof \App\Models\User && Auth::user()->hasRole('admin')) {
-            return $next($request);
+        // Check if the user is authenticated with the 'web' guard
+        if (!Auth::guard('web')->check()) {
+            return redirect()->route('login')->with('error', 'Anda harus login sebagai admin.');
         }
 
-        // Logout jika bukan admin dan redirect ke halaman login
-        Auth::logout();
-        return redirect()->route('login')->withErrors(['access' => 'Akses ditolak. Hanya admin yang diizinkan.']);
+        // Check if the authenticated user has the admin role
+        if (Auth::guard('web')->user()->role !== 'admin') {
+            return redirect()->route('login')->with('error', 'Akses ditolak. Hanya admin yang diizinkan.');
+        }
+
+        return $next($request);
     }
 }

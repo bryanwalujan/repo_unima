@@ -144,13 +144,17 @@
         </div>
         
         <div class="py-4">
-            <a href="#" class="nav-link active flex items-center py-3 px-6">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link active flex items-center py-3 px-6">
                 <i class="fas fa-tachometer-alt text-blue-300 mr-3"></i>
                 <span>Dashboard</span>
             </a>
             <a href="{{ route('admin.dosen.index') }}" class="nav-link flex items-center py-3 px-6">
                 <i class="fas fa-user-tie text-blue-300 mr-3"></i>
                 <span>Data Dosen</span>
+            </a>
+            <a href="{{ route('admin.analytics.index') }}" class="nav-link flex items-center py-3 px-6">
+                <i class="fas fa-chart-bar text-blue-300 mr-3"></i>
+                <span>Analytics</span>
             </a>
         </div>
         
@@ -218,7 +222,7 @@
                     Kelola Data Dosen
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Lihat Data Dosen -->
                     <a href="{{ route('admin.dosen.index') }}" class="action-card bg-white">
                         <div class="p-6 flex flex-col h-full">
@@ -256,10 +260,27 @@
                             </div>
                         </div>
                     </a>
+                    
+                    <!-- Dashboard Analytics -->
+                    <a href="{{ route('admin.analytics.index') }}" class="action-card bg-white">
+                        <div class="p-6 flex flex-col h-full">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                                    <i class="fas fa-chart-bar text-purple-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-800">Dashboard Analytics</h3>
+                            </div>
+                            <p class="text-gray-600 mb-4 flex-grow">
+                                Lihat analisis dan visualisasi data akademik seperti tren penelitian dan produktivitas dosen.
+                            </p>
+                            <div class="text-purple-600 font-medium flex items-center mt-auto">
+                                <span>Lihat Analytics</span>
+                                <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
-            
-            
         </main>
         
         <!-- Footer -->

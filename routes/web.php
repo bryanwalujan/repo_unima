@@ -2,6 +2,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 // Rute Publik
@@ -18,9 +19,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-// Rute Admin (memerlukan autentikasi dan role admin)
-Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
+// Rute Admin (tanpa middleware, otorisasi dilakukan di controller)
+Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
+        if (!Auth::guard('web')->check() || Auth::guard('web')->user()->role !== 'admin') {
+            return redirect()->route('login')->with('error', 'Akses ditolak. Hanya admin yang diizinkan.');
+        }
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
@@ -32,6 +36,11 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/dosen/{id}', [DosenController::class, 'destroy'])->name('admin.dosen.destroy');
     Route::post('/dosen/import', [DosenController::class, 'import'])->name('admin.dosen.import');
     Route::get('/dosen/{id}', [DosenController::class, 'show'])->name('admin.dosen.show');
+    Route::get('/dosen/{id}/recommend', [DosenController::class, 'recommend'])->name('admin.dosen.recommend');
+    Route::delete('/penelitian/{id}', [DosenController::class, 'destroyPenelitian'])->name('admin.penelitian.destroy');
+
+    // Rute untuk Dashboard Analytics
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
 });
 
 // Rute Dosen (memerlukan autentikasi dengan guard dosen)
