@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f44c5029ec23b8c2255fb10ef9830626",
+    "content-hash": "52284d4e6c80fab8fe8499521e0fbc37",
     "packages": [
         {
             "name": "brick/math",
@@ -3204,6 +3204,69 @@
                 }
             ],
             "time": "2025-05-08T08:14:37+00:00"
+        },
+        {
+            "name": "paperscissorsandglue/laravel-encryption-at-rest",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paperscissors/Laravel-Encryption-At-Rest.git",
+                "reference": "55566bc416fcd128b987e7453a1e9c25255a9221"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paperscissors/Laravel-Encryption-At-Rest/zipball/55566bc416fcd128b987e7453a1e9c25255a9221",
+                "reference": "55566bc416fcd128b987e7453a1e9c25255a9221",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^10.0|^11.0|^12.0",
+                "illuminate/encryption": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^10.0|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Paperscissorsandglue\\EncryptionAtRest\\EncryptionAtRestServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Paperscissorsandglue\\EncryptionAtRest\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paper Scissors and Glue",
+                    "email": "info@paperscissorsandglue.com"
+                }
+            ],
+            "description": "Laravel package for encrypting sensitive data at rest and decrypting it when in use - useful for GDPR, HIPAA, and other compliance requirements",
+            "keywords": [
+                "encryption",
+                "encryption-at-rest",
+                "gdpr",
+                "hipaa",
+                "laravel",
+                "pii",
+                "privacy"
+            ],
+            "support": {
+                "issues": "https://github.com/paperscissors/Laravel-Encryption-At-Rest/issues",
+                "source": "https://github.com/paperscissors/Laravel-Encryption-At-Rest/tree/v0.2.0"
+            },
+            "time": "2025-07-29T19:13:45+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
